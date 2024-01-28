@@ -1,30 +1,15 @@
 data "aws_iam_policy_document" "assume_role" {
-  source_json = <<EOT
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "eks.amazonaws.com"
-      }
-    }
-  ]
-}
-EOT
+  source_policy_documents = ["data/aws_iam_policy_document/assume_role.json"]
 }
 
 resource "aws_iam_role" "eks_cluster" {
-  count              = var.create_eks_cluster ? 1 : 0
-  name               = "eks-cluster-cloud-${random_string.random_suffix.result}"
+  name               = "eks-cluster-cloud"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
 resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
-  count      = var.create_eks_cluster ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role       = aws_iam_role.eks_cluster[0].name
+  role       = aws_iam_role.eks_cluster.name
 }
 
 data "aws_vpc" "default" {
@@ -39,10 +24,10 @@ data "aws_subnets" "public" {
 }
 
 resource "aws_eks_cluster" "eks_cluster" {
-  count     = var.create_eks_cluster ? 1 : 0
-  name      = "EKS_CLOUD"
-  role_arn  = aws_iam_role.eks_cluster[0].arn
-  vpc_config = {
+  name     = "EKS_CLOUD"
+  role_arn = aws_iam_role.eks_cluster.arn
+
+  vpc_config {
     subnet_ids = data.aws_subnets.public.ids
   }
 
@@ -53,6 +38,7 @@ resource "aws_eks_cluster" "eks_cluster" {
 
 resource "aws_iam_role" "eks_node_group" {
   name = "eks-node-group-cloud"
+
   assume_role_policy = jsonencode({
     Statement = [{
       Action = "sts:AssumeRole",
@@ -81,7 +67,8 @@ resource "aws_iam_role_policy_attachment" "ecr_read_only_policy" {
 }
 
 resource "aws_eks_node_group" "eks_node_group" {
-  cluster_name    = aws_eks_cluster.eks_cluster[0].name
+  count           = var.create_eks_cluster ? 1 : 0
+  cluster_name    = aws_eks_cluster.eks_cluster.name
   node_group_name = "Node-cloud"
   node_role_arn   = aws_iam_role.eks_node_group.arn
   subnet_ids      = data.aws_subnets.public.ids
@@ -100,8 +87,7 @@ resource "aws_eks_node_group" "eks_node_group" {
   ]
 }
 
-resource "random_string" "random_suffix" {
-  count  = var.create_eks_cluster ? 1 : 0
-  length = 4
-  special = false
+variable "create_eks_cluster" {
+  description = "Whether to create the EKS cluster or not"
+  default     = true  # Set your default value accordingly
 }
