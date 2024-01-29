@@ -44,7 +44,7 @@ https://archive.eksworkshop.com/intermediate/290_argocd/install/
   }
     stage('Checkout Code') {
       steps {
-        git branch: 'main', url: 'https://github.com/Aj7Ay/Tetris-manifest.git](https://github.com/RajinikanthVadla/Tetris-V1.git'
+        git branch: 'main', url: 'https://github.com/RajinikanthVadla/Tetris-V1.git'
       }
     }
 
