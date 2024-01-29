@@ -3,7 +3,7 @@ pipeline{
     stages {
         stage('Checkout from Git'){
             steps{
-                git branch: 'main', url: 'https://github.com/Aj7Ay/Tetris-V1.git'
+                git branch: 'main', url: 'https://github.com/RajinikanthVadla/Tetris-V1.git'
             }
         }
         stage('Terraform version'){
