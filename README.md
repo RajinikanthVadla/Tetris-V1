@@ -39,12 +39,12 @@ https://archive.eksworkshop.com/intermediate/290_argocd/install/
 # Image updater stage
 ```
  environment {
-    GIT_REPO_NAME = "Tetris-V1"
+    GIT_REPO_NAME = "Tetris-manifest"
     GIT_USER_NAME = "RajinikanthVadla"
   }
     stage('Checkout Code') {
       steps {
-        git branch: 'main', url: 'https://github.com/RajinikanthVadla/Tetris-V1.git'
+        git branch: 'main', url: 'https://github.com/RajinikanthVadla/Tetris-manifest.git'
       }
     }
 
