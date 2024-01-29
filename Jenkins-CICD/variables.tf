@@ -8,7 +8,7 @@ variable "key_name" {
 }
 variable "instance_type" {
   description = "instance type for ec2"
-  default     = "t2.medium"
+  default     = "t3.medium"
 }
 variable "ami_id" {
   description = "AMI for Ubuntu Ec2 instance"
